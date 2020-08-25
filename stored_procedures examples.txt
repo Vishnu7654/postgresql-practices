@@ -1,0 +1,193 @@
+example 1:
+===========
+
+select * from accounts;
+ id |  name  | balance  
+----+--------+----------
+  1 | vishnu | 10000.00
+  2 | tarak  | 10000.00
+  3 | siddu  | 10000.00
+(3 rows)
+
+CREATE PROCEDURE transfer(sender int,receiver int ,amount dec)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN
+UPDATE accounts
+set balance = balance - amount
+where id = sender;
+commit;
+END;
+$$;
+
+CREATE PROCEDURE
+
+CALL transfer(1,2,1000);
+CALL
+
+select * from accounts;
+ id |  name  | balance  
+----+--------+----------
+  2 | tarak  | 10000.00
+  3 | siddu  | 10000.00
+  1 | vishnu |  9000.00
+(3 rows)
+
+example 2:
+===========
+
+CREATE PROCEDURE display_message (INOUT msg TEXT)
+AS $$
+BEGIN 
+RAISE NOTICE 'Procedure Parameter:%',msg;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE PROCEDURE
+
+call display_message('this is my first choice');
+
+NOTICE:  Procedure Parameter:this is my first choice
+           msg           
+-------------------------
+ this is my first choice
+
+
+example 3:
+========
+
+CREATE PROCEDURE transaction(sender int, receiver int,amount dec)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN 
+UPDATE accounts
+set balance = balance + amount
+where id = receiver ;
+commit;
+END;
+$$;
+
+CREATE PROCEDURE
+
+CALL transaction(2,3,500);
+CALL
+
+select * from accounts;
+ id |  name  | balance  
+----+--------+----------
+  2 | tarak  | 10000.00
+  1 | vishnu |  9000.00
+  3 | siddu  | 10500.00
+
+
+example 4:
+==============
+
+CREATE PROCEDURE insertrecord(stu_id int,stu_name text,stu_age int ,stu_adr char(30))
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN 
+INSERT INTO public.student(stu_id ,stu_name,stu_age,stu_adr) VALUES ($1,$2,$3,$4);
+COMMIT
+END;
+$$;
+
+CREATE PROCEDURE
+
+CALL insertrecord(105,'raja',23,'hyderabad');
+CALL
+
+ select * from student;
+ stu_id |       stu_name       | stu_age |       stu_adr        
+--------+----------------------+---------+----------------------
+    101 | vishnu               |      23 | banglore            
+    102 | vardhan              |      22 | banglore            
+    104 | abhi                 |      26 | banglore            
+    103 | siddu                |      25 | banglore            
+      1 | giri                 |      25 | chennai             
+    105 | raja                 |      23 | hyderabad           
+(6 rows)
+
+
+before student table:
+=======================
+
+ select * from student;
+
+ stu_id |       stu_name       | stu_age |       stu_adr        
+--------+----------------------+---------+----------------------
+    101 | vishnu               |      23 | banglore            
+    102 | vardhan              |      22 | banglore            
+    104 | abhi                 |      26 | banglore            
+    103 | siddu                |      25 | banglore            
+      1 | giri                 |      25 | chennai             
+(5 rows)
+
+
+
+
+Example 5:
+===========
+
+
+CREATE PROCEDURE control_transaction()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+BEGIN
+CREATE TABLE test1(id int);
+INSERT INTO test1 VALUES (1);
+COMMIT;
+CREATE TABLE test2 (id int);
+INSERT INTO test2 VALUES(1);
+ROLLBACK;
+END $$;
+
+CREATE PROCEDURE
+
+call control_transaction();
+CALL
+
+ select relname from pg_class where relname like '%test%';
+ relname 
+---------
+ test1
+
+vishnu=# select * from student;
+ stu_id |       stu_name       | stu_age |       stu_adr        
+--------+----------------------+---------+----------------------
+    101 | vishnu               |      23 | banglore            
+    102 | vardhan              |      22 | banglore            
+    104 | abhi                 |      26 | banglore            
+    103 | siddu                |      25 | banglore            
+(4 rows)
+
+example 6:
+==========
+
+create procedure teacher(integer,text,integer,char)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN 
+INSERT INTO public.student(stu_id,stu_name,stu_age,stu_adr) values ($1,$2,$3,$4);
+COMMIT;
+END;
+$$;
+
+CREATE PROCEDURE
+
+
+call teacher(1,'giri',25,'chennai');
+CALL
+
+
+select * from student;
+ stu_id |       stu_name       | stu_age |       stu_adr        
+--------+----------------------+---------+----------------------
+    101 | vishnu               |      23 | banglore            
+    102 | vardhan              |      22 | banglore            
+    104 | abhi                 |      26 | banglore            
+    103 | siddu                |      25 | banglore            
+      1 | giri                 |      25 | chennai             
+(5 rows)

@@ -1,0 +1,24 @@
+stored procedures:
+=================
+
+create procedure teacher(integer,text,integer,char)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN 
+INSERT INTO public.student(stu_id,stu_name,stu_age,stu_adr) values ($1,$2,$3,$4);
+COMMIT;
+END;
+$$;
+CREATE PROCEDURE
+call teacher(1,'giri',25,'chennai');
+CALL
+
+select * from student;
+ stu_id |       stu_name       | stu_age |       stu_adr        
+--------+----------------------+---------+----------------------
+    101 | vishnu               |      23 | banglore            
+    102 | vardhan              |      22 | banglore            
+    104 | abhi                 |      26 | banglore            
+    103 | siddu                |      25 | banglore            
+      1 | giri                 |      25 | chennai             
+(5 rows)
